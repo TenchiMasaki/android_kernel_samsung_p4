@@ -36,12 +36,11 @@ obj-y                                   += kfuse.o
 obj-y                                   += csi.o
 obj-$(CONFIG_TEGRA_SILICON_PLATFORM)    += tegra_odm_fuses.o
 obj-y                                   += i2c_error_recovery.o
-ifneq ($(CONFIG_MACH_SAMSUNG_P3),y)
-obj-y                                   += tegra_spdif_audio.o
-endif
 obj-y                                   += mc.o
 obj-$(CONFIG_TEGRA_STAT_MON)            += tegra2_statmon.o
 obj-$(CONFIG_USB_SUPPORT)               += usb_phy.o
+obj-$(CONFIG_USB_SUPPORT)               += tegra3_usb_phy.o
+obj-$(CONFIG_USB_SUPPORT)               += tegra2_usb_phy.o
 obj-$(CONFIG_FIQ)                       += fiq.o
 obj-$(CONFIG_TEGRA_FIQ_DEBUGGER)        += tegra_fiq_debugger.o
 obj-$(CONFIG_TEGRA_PWM)                 += pwm.o
@@ -219,7 +218,7 @@ obj-${CONFIG_MACH_CARDHU}               += board-cardhu-memory.o
 obj-${CONFIG_MACH_CARDHU}               += board-cardhu-powermon.o
 
 obj-${CONFIG_MACH_KAI}                  += board-touch-kai-synaptics-spi.o
-obj-y                                   += board-touch-raydium_spi.o
+#obj-y                                   += board-touch-raydium_spi.o
 
 obj-${CONFIG_MACH_P1852}               += board-p1852.o
 obj-${CONFIG_MACH_P1852}               += board-p1852-panel.o
@@ -244,6 +243,7 @@ obj-${CONFIG_MACH_KAI}                  += board-kai-pinmux.o
 obj-${CONFIG_MACH_KAI}                  += board-kai-power.o
 obj-${CONFIG_MACH_KAI}                  += board-kai-sdhci.o
 obj-${CONFIG_MACH_KAI}                  += board-kai-sensors.o
+obj-y                                   += eeprom-wifi-mac.o
 
 obj-${CONFIG_TEGRA_BB_XMM_POWER}        += baseband-xmm-power.o
 obj-${CONFIG_TEGRA_BB_XMM_POWER2}       += baseband-xmm-power2.o
@@ -261,3 +261,30 @@ endif
 ifeq ($(CONFIG_BCM4330),y)
 	ccflags-y  += -DBUILTIN_WIFI
 endif
+
+# smba1006 arch drivers
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006-atag.o
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006-audio.o
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006-bootinfo.o
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006-camera.o
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006-clocks.o
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006-panel.o
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006-gsm.o
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006-i2c.o
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006-keyboard.o
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006-nand.o
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006-pinmux.o
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006-power.o
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006-sensors.o
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006-touch.o
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006-uart.o
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006-usb.o
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006-wake.o
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006.o
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006-sdhci.o
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006-pm-camera.o
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006-pm-gps.o
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006-gps.o
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006-pm-gsm.o
+obj-${CONFIG_MACH_SMBA1006}              += board-smba1006-gsm.o
+obj-${CONFIG_MACH_SMBA1006}              += bcb.o

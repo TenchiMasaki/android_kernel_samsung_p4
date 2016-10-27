@@ -1175,7 +1175,7 @@ out:
 
 	/* Always enable CPU power request; just normal polarity is supported */
 	reg = readl(pmc + PMC_CTRL);
-#ifdef CONFIG_MACH_SAMSUNG_P5
+#ifdef CONFIG_ARCH_TEGRA_2x_SOC
 	/* FIXME: why read error? */
 	if (reg & TEGRA_POWER_CPU_PWRREQ_POLARITY) {
 		printk(KERN_ERR "%s: PMC_CTRL read err (0x%08x) L:%d\n",
@@ -1194,7 +1194,7 @@ out:
 	__raw_writel(pdata->core_off_timer, pmc + PMC_COREPWROFF_TIMER);
 
 	reg = readl(pmc + PMC_CTRL);
-#ifdef CONFIG_MACH_SAMSUNG_P5
+#ifdef CONFIG_ARCH_TEGRA_2x_SOC
 	/* FIXME: why read error? */
 	if (!(reg & TEGRA_POWER_CPU_PWRREQ_OE)) {
 		printk(KERN_ERR "%s: PMC_CTRL read err (0x%08x) L:%d\n",

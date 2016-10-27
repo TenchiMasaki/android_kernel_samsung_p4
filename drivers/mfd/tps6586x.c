@@ -36,11 +36,20 @@
 #define TPS6586x_CHG1		0x49
 #define TPS6586X_CHG2		0x4A
 
-#define RETRY_CNT			5
 #endif
+
+#define RETRY_CNT			5
 
 #define EXITSLREQ_BIT       BIT(1) /* Exit sleep mode request */
 #define SLEEP_MODE_BIT      BIT(3) /* Sleep mode */
+
+/* RGB1 control registers */
+#define TPS6586X_RGB1FLASH	0x50
+#define TPS6586X_RGB1RED	0x51
+#define TPS6586X_RGB1GREEN	0x52
+#define TPS6586X_RGB1BLUE	0x53
+#define DISABLE_FLASH_MODE	0xff
+#define TPS6586X_RGB1GREEN_BIT BIT(7)
 
 /* GPIO control registers */
 #define TPS6586X_GPIOSET1	0x5d
@@ -360,6 +369,56 @@ int tps6586x_soft_rst(void)
 				TPS6586X_SUPPLYENE, SOFT_RST_BIT);
 }
 #endif
+
+int tps6586x_cancel_sleep(void)
+{
+	struct device *dev = NULL;
+	int ret = -EINVAL;
+
+	if (!tps6586x_i2c_client)
+		return ret;
+
+	dev = &tps6586x_i2c_client->dev;
+
+	ret = tps6586x_set_bits(dev, TPS6586X_SUPPLYENE, EXITSLREQ_BIT);
+	if (ret)
+		return ret;
+
+	return 0;
+}
+
+int tps6586x_suspend_led(int enable)
+{
+	struct device *dev = NULL;
+	int ret = -EINVAL;
+	uint8_t val;
+	if (!tps6586x_i2c_client)
+		goto fail;
+
+	dev = &tps6586x_i2c_client->dev;
+
+	if (tps6586x_write(dev,TPS6586X_RGB1FLASH,DISABLE_FLASH_MODE))
+		goto fail;
+
+	if ( tps6586x_read(dev,TPS6586X_RGB1GREEN,&val))
+		goto fail;
+
+	val |=0x0F;
+	if (tps6586x_write(dev,TPS6586X_RGB1GREEN,val))
+	goto fail;
+
+	if(enable){
+		ret = tps6586x_set_bits(dev, TPS6586X_RGB1GREEN,TPS6586X_RGB1GREEN_BIT);
+	} else {
+		ret = tps6586x_clr_bits(dev, TPS6586X_RGB1GREEN,TPS6586X_RGB1GREEN_BIT);
+	}
+	if (ret)
+		goto fail;
+
+	return 0;
+fail:
+	return ret;
+}
 
 static int tps6586x_gpio_get(struct gpio_chip *gc, unsigned offset)
 {

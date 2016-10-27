@@ -64,6 +64,10 @@
 #define L310_POWER_CTRL			0xF80
 #define   L310_DYNAMIC_CLK_GATING_EN	(1 << 1)
 #define   L310_STNDBY_MODE_EN		(1 << 0)
+#define L2X0_PREFETCH_CTRL		0xF60
+#define L2X0_POWER_CTRL			0xF80
+#define   L2X0_DYNAMIC_CLK_GATING_EN	(1 << 1)
+#define   L2X0_STNDBY_MODE_EN		(1 << 0)
 
 /* Registers shifts and masks */
 #define L2X0_CACHE_ID_PART_MASK		(0xf << 6)
@@ -152,6 +156,7 @@ extern void __init l2x0_init(void __iomem *base, u32 aux_val, u32 aux_mask);
 #ifdef CONFIG_MACH_SAMSUNG_VARIATION_TEGRA
 extern void l2x0_resume(void);
 #endif
+extern void l2x0_enable(void);
 #if defined(CONFIG_CACHE_L2X0) && defined(CONFIG_OF)
 extern int l2x0_of_init(u32 aux_val, u32 aux_mask);
 #else

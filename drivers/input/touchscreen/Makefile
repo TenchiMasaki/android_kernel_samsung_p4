@@ -66,3 +66,4 @@ obj-$(CONFIG_TOUCHSCREEN_RM31080A)	+= rm31080a_ts.o
 obj-$(CONFIG_TOUCHSCREEN_SYN_RMI4_SPI)  += rmi4/
 obj-$(CONFIG_TOUCHSCREEN_MXT1386)	+= atmel_mxt1386.o atmel_mxt1386_cfg.o
 obj-$(CONFIG_TOUCHSCREEN_MELFAS) += melfas_ts.o mcs8000_download.o mms100_ISC_download.o
+obj-$(CONFIG_TOUCHSCREEN_AT168_I2C)     += at168_i2c.o

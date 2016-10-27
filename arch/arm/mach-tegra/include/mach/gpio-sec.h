@@ -26,7 +26,7 @@
 #elif defined(CONFIG_MACH_SAMSUNG_P5)
 #include "gpio-p5.h"
 #else
-#error "Invalid machine type"
+//#error "Invalid machine type"
 #endif
 
 #define NO		0

@@ -994,13 +994,17 @@ static ssize_t enable_show(struct device *pdev, struct device_attribute *attr,
 static ssize_t enable_store(struct device *pdev, struct device_attribute *attr,
 			    const char *buff, size_t size)
 {
-	struct android_dev *dev = dev_get_drvdata(pdev);
-	struct usb_composite_dev *cdev = dev->cdev;
+	struct android_dev *dev;;
+	struct usb_composite_dev *cdev;
 	struct android_usb_function *f;
 	int enabled = 0;
 
+	if (!pdev) return size;
+	dev = dev_get_drvdata(pdev);
+	if (!dev) return size;
+	cdev = dev->cdev;
+	if (!cdev) return size;
 	mutex_lock(&dev->mutex);
-
 	sscanf(buff, "%d", &enabled);
 	if (enabled && !dev->enabled) {
 		/* update values in composite driver's copy of device descriptor */
@@ -1017,7 +1021,7 @@ static ssize_t enable_store(struct device *pdev, struct device_attribute *attr,
 		android_enable(dev);
 		dev->enabled = true;
 		if(first_usb_function_enable == 0) {
-			detect_cable_status();
+			//detect_cable_status();
 			first_usb_function_enable = 1;
 		}
 	} else if (!enabled && dev->enabled) {

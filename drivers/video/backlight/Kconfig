@@ -355,7 +355,7 @@ config BACKLIGHT_AAT2870
 config BACKLIGHT_CMC623_PWM
         bool "CMC623 PWM Backlight Driver"
         depends on BACKLIGHT_CLASS_DEVICE 
-        default y
+        default n
         help
           Say Y to enalbe the backlight driven by CMC623
 endif # BACKLIGHT_CLASS_DEVICE

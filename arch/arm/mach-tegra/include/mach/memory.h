@@ -34,7 +34,7 @@
 #endif
 
 #if defined(CONFIG_KEXEC_HARDBOOT)
-#if defined(CONFIG_MACH_SAMSUNG_VARIATION_TEGRA)
+#if defined(CONFIG_MACH_SMBA1006)
 #define KEXEC_HB_PAGE_ADDR		UL(0x2e500000)
 #else
 #error "Adress for kexec hardboot page not defined"

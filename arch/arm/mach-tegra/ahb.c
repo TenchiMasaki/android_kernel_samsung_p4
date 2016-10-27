@@ -171,7 +171,7 @@ static int __init tegra_init_ahb_gizmo_settings(void)
 	unsigned long val;
 
 	val = gizmo_readl(AHB_GIZMO_AHB_MEM);
-	val |= ENB_FAST_REARBITRATE;
+	val |= ENB_FAST_REARBITRATE | IMMEDIATE | DONT_SPLIT_AHB_WR;
 	gizmo_writel(val, AHB_GIZMO_AHB_MEM);
 
 	val = gizmo_readl(AHB_GIZMO_USB);
@@ -193,14 +193,12 @@ static int __init tegra_init_ahb_gizmo_settings(void)
 
 	val = gizmo_readl(AHB_MEM_PREFETCH_CFG1);
 	val &= ~MST_ID(~0);
-	val |= PREFETCH_ENB | AHBDMA_MST_ID | ADDR_BNDRY(0xc)
-		| INACTIVITY_TIMEOUT(0xFFFF);
+	val |= PREFETCH_ENB | AHBDMA_MST_ID | ADDR_BNDRY(0xc) | INACTIVITY_TIMEOUT(0x1000);
 	gizmo_writel(val, AHB_MEM_PREFETCH_CFG1);
 
 	val = gizmo_readl(AHB_MEM_PREFETCH_CFG2);
 	val &= ~MST_ID(~0);
-	val |= PREFETCH_ENB | USB_MST_ID | ADDR_BNDRY(0xc)
-		| INACTIVITY_TIMEOUT(0xFFFF);
+	val |= PREFETCH_ENB | USB_MST_ID | ADDR_BNDRY(0xc) | INACTIVITY_TIMEOUT(0x1000);
 	gizmo_writel(val, AHB_MEM_PREFETCH_CFG2);
 
 	val = gizmo_readl(AHB_MEM_PREFETCH_CFG3);

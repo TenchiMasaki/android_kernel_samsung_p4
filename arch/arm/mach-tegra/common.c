@@ -59,6 +59,10 @@
 #define   ENB_FAST_REARBITRATE	BIT(2)
 #define   DONT_SPLIT_AHB_WR     BIT(7)
 
+#define   RECOVERY_MODE	BIT(31)
+#define   BOOTLOADER_MODE	BIT(30)
+#define   FORCED_RECOVERY_MODE	BIT(1)
+
 #define AHB_GIZMO_USB		0x1c
 #define AHB_GIZMO_USB2		0x78
 #define AHB_GIZMO_USB3		0x7c
@@ -115,6 +119,23 @@ void tegra_assert_system_reset(char mode, const char *cmd)
 	void __iomem *reset = IO_ADDRESS(TEGRA_PMC_BASE + 0x00);
 	u32 reg;
 
+	reg = readl_relaxed(reset + PMC_SCRATCH0);
+	/* Writing recovery kernel or Bootloader mode in SCRATCH0 31:30:1 */
+	if (cmd) {
+		if (!strcmp(cmd, "recovery"))
+			reg |= RECOVERY_MODE;
+		else if (!strcmp(cmd, "bootloader"))
+			reg |= BOOTLOADER_MODE;
+		else if (!strcmp(cmd, "forced-recovery"))
+			reg |= FORCED_RECOVERY_MODE;
+		else
+			reg &= ~(BOOTLOADER_MODE | RECOVERY_MODE | FORCED_RECOVERY_MODE);
+	}
+	else {
+		/* Clearing SCRATCH0 31:30:1 on default reboot */
+		reg &= ~(BOOTLOADER_MODE | RECOVERY_MODE | FORCED_RECOVERY_MODE);
+	}
+	writel_relaxed(reg, reset + PMC_SCRATCH0);
 	/* use *_related to avoid spinlock since caches are off */
 	reg = readl_relaxed(reset);
 	reg |= 0x10;
@@ -122,6 +143,7 @@ void tegra_assert_system_reset(char mode, const char *cmd)
 #endif
 }
 static int modem_id;
+static int commchip_id;
 static int sku_override;
 static int debug_uart_port_id;
 static enum audio_codec_type audio_codec_name;
@@ -146,17 +168,17 @@ static __initdata struct tegra_clk_init_table common_clk_init_table[] = {
 	{ "pll_p_out2",	"pll_p",	48000000,	false },
 	{ "pll_p_out3",	"pll_p",	72000000,	true },
 	{ "pll_p_out4",	"pll_p",	108000000,	false },
-	{ "pll_m",	"clk_m",	600000000,		true },
+	{ "pll_m",	"clk_m",	0,		true },
 	{ "pll_m_out1",	"pll_m",	120000000,	true },
-	{ "sclk",	"pll_m_out1",	40000000,	true },
+	{ "sclk",	"pll_c_out1",	40000000,	true },
 	{ "hclk",	"sclk",		40000000,	true },
 	{ "pclk",	"hclk",		40000000,	true },
-	{ "mpe",	"pll_m",	0,		false },
-	{ "epp",	"pll_m",	0,		false },
-	{ "vi_sensor",	"pll_m",	0,		false },
-	{ "vi",		"pll_m",	0,		false },
-	{ "2d",		"pll_m",	0,		false },
-	{ "3d",		"pll_m",	0,		false },
+	{ "mpe",	"pll_c",	0,		false },
+	{ "epp",	"pll_c",	0,		false },
+	{ "vi_sensor",	"pll_c",	0,		false },
+	{ "vi",		"pll_c",	0,		false },
+	{ "2d",		"pll_c",	0,		false },
+	{ "3d",		"pll_c",	0,		false },
 #else
 	{ "pll_p",	NULL,		0,		true },
 	{ "pll_p_out1",	"pll_p",	0,		false },
@@ -324,21 +346,22 @@ void tegra_init_cache(bool init)
 	writel(0x770, p + L310_DATA_LATENCY_CTRL);
 #endif
 #endif
-
-	prefetch = readl_relaxed(p + L310_PREFETCH_CTRL);
-	prefetch &= ~L310_PREFETCH_CTRL_OFFSET_MASK;
-	prefetch |= 0x05 & L310_PREFETCH_CTRL_OFFSET_MASK;
-	// prefetch |= L310_PREFETCH_CTRL_DBL_LINEFILL_INCR;
-	// prefetch |= L310_PREFETCH_CTRL_PREFETCH_DROP;
-	// prefetch |= L310_PREFETCH_CTRL_DBL_LINEFILL_WRAP;
-	// prefetch |= L310_PREFETCH_CTRL_DBL_LINEFILL;
-	writel_relaxed(prefetch, p + L310_PREFETCH_CTRL);
-
+	writel(0x3, p + L2X0_POWER_CTRL);
+	aux_ctrl = readl(p + L2X0_CACHE_TYPE);
+	aux_ctrl = (aux_ctrl & 0x700) << (17-8);
+	aux_ctrl |= 0x7C000001;
 	if (init) {
-		l2x0_init(p, 0x3c400001, 0xc20fc3fe);
+		l2x0_init(p, aux_ctrl, 0x8200c3fe);
 	} else {
-		l2x0_resume();
+		u32 tmp;
+
+		tmp = aux_ctrl;
+		aux_ctrl = readl(p + L2X0_AUX_CTRL);
+		aux_ctrl &= 0x8200c3fe;
+		aux_ctrl |= tmp;
+		writel(aux_ctrl, p + L2X0_AUX_CTRL);
 	}
+	l2x0_enable();
 #endif
 }
 #endif
@@ -417,17 +440,14 @@ void __init tegra_init_early(void)
 	   handler initializer is not called, so do it here for non-SMP. */
 	tegra_cpu_reset_handler_init();
 #endif
-	/*tegra_fbmem=4096000@0x18012000*/
-	tegra_bootloader_fb_size = 4096000;
-	tegra_bootloader_fb_start = 0x18012000;
-
 	tegra_init_fuse();
-	tegra_init_clock();
 	tegra_gpio_resume_init();
+	tegra_init_clock();
 	tegra_init_pinmux();
 	tegra_clk_init_from_table(common_clk_init_table);
 	tegra_init_power();
 	tegra_init_cache(true);
+	tegra_init_ahb_gizmo_settings();
 	tegra_init_debug_uart_rate();
 }
 
@@ -709,6 +729,22 @@ int tegra_get_modem_id(void)
 }
 
 __setup("modem_id=", tegra_modem_id);
+
+static int __init tegra_commchip_id(char *id)
+{
+	char *p = id;
+
+	if (get_option(&p, &commchip_id) != 1)
+		return 0;
+	return 1;
+}
+
+int tegra_get_commchip_id(void)
+{
+	return commchip_id;
+}
+
+__setup("commchip_id=", tegra_commchip_id);
 
 /*
  * Tegra has a protected aperture that prevents access by most non-CPU

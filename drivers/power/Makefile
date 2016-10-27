@@ -28,6 +28,7 @@ obj-$(CONFIG_BATTERY_TOSA)	+= tosa_battery.o
 obj-$(CONFIG_BATTERY_COLLIE)	+= collie_battery.o
 obj-$(CONFIG_BATTERY_WM97XX)	+= wm97xx_battery.o
 obj-$(CONFIG_BATTERY_BQ20Z75)	+= bq20z75.o
+obj-$(CONFIG_SMBA_BATTERY)	+= smba-battery.o
 obj-$(CONFIG_BATTERY_P3)	+= p3_battery.o
 obj-$(CONFIG_BATTERY_P4)	+= p4_battery.o
 obj-$(CONFIG_BATTERY_MAX17042)	+= max17042_battery.o

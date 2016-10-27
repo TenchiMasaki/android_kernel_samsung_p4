@@ -142,4 +142,7 @@ extern int tps6586x_rtc_save_time(void);
 extern int tps6586x_adc_read(u32 *mili_volt, u8 channel);
 #endif
 
+extern int tps6586x_cancel_sleep(void);
+extern int tps6586x_suspend_led(int enable);
+
 #endif /*__LINUX_MFD_TPS6586X_H */

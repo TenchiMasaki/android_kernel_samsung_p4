@@ -24,6 +24,11 @@ config VIDEOBUF_DMA_CONTIG
 	select VIDEOBUF_GEN
 	tristate
 
+config VIDEOBUF_DMA_NVMAP
+        depends on HAS_DMA
+        select VIDEOBUF_GEN
+        tristate
+
 config VIDEOBUF_DVB
 	tristate
 	select VIDEOBUF_GEN
@@ -66,6 +71,12 @@ config VIDEOBUF2_DMA_SG
 	select VIDEOBUF2_CORE
 	select VIDEOBUF2_MEMOPS
 	tristate
+
+config VIDEOBUF2_DMA_NVMAP
+	select VIDEOBUF2_CORE
+	select VIDEOBUF2_MEMOPS
+	tristate
+
 #
 # Multimedia Video device configuration
 #
@@ -977,6 +988,21 @@ config VIDEO_S5P_MIPI_CSIS
 	  To compile this driver as a module, choose M here: the
 	  module will be called s5p-csis.
 
+config VIDEO_TEGRA
+        tristate "Tegra soc_camera host driver"
+        depends on VIDEO_DEV && ARCH_TEGRA && SOC_CAMERA
+        select VIDEOBUF_DMA_NVMAP
+        ---help---
+          This is a v4l2 driver for the Tegra camera interface
+
+config VIDEO_S5K4CDGX
+        tristate "s5k4cdgx support"
+        depends on I2C && VIDEO_V4L2
+        select MEDIA_CONTROLLER
+        select VIDEO_V4L2_SUBDEV_API
+        ----help---
+          This driver supports S5K4CDGX cameras from Samsung
+        
 source "drivers/media/video/s5p-tv/Kconfig"
 
 #

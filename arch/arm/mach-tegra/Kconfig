@@ -83,6 +83,14 @@ config MACH_HARMONY
        help
          Support for NVIDIA Harmony development platform
 
+		 
+config MACH_SMBA1006
+       bool "Malata smba1006"
+       depends on ARCH_TEGRA_2x_SOC
+       select MACH_HAS_SND_SOC_TEGRA_ALC5623 if SND_SOC
+       help
+         Support for the Malata smba1006 (NotionInk Adam)
+		 
 config MACH_VENTANA
        bool "Ventana board"
        depends on ARCH_TEGRA_2x_SOC
@@ -454,7 +462,7 @@ config TEGRA_MC_EARLY_ACK
 
 config TEGRA_MC_PROFILE
 	tristate "Enable profiling memory controller utilization"
-	default n
+	default y
 	help
 	  When enabled, provides a mechanism to perform statistical
 	  sampling of the memory controller usage on a client-by-client
