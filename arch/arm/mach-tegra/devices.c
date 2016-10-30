@@ -1032,7 +1032,7 @@ static struct resource spdif_resource[] = {
 };
 
 struct platform_device tegra_spdif_device = {
-	.name		= "spdif_out",
+	.name		= "tegra20-spdif",
 	.id		= -1,
 	.resource	= spdif_resource,
 	.num_resources	= ARRAY_SIZE(spdif_resource),
@@ -1202,7 +1202,7 @@ static struct resource tegra_udc_resources[] = {
 static u64 tegra_udc_dmamask = DMA_BIT_MASK(32);
 
 struct platform_device tegra_udc_device = {
-	.name	= "fsl-tegra-udc",
+	.name	= "tegra-udc",
 	.id	= 0,
 	.dev	= {
 		.dma_mask	= &tegra_udc_dmamask,
