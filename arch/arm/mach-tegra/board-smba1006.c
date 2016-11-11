@@ -221,7 +221,7 @@ static void __init tegra_smba_init(void)
 	//smba_gsm_pm_register_devices();
 
 	/* Register Camera powermanagement devices */
-	//smba_camera_register_devices();
+	smba_camera_register_devices();
 
 	/* Register NAND flash devices */
 	smba_nand_register_devices();

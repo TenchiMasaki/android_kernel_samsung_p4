@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  */
-#if 0
+
 #include <linux/console.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -239,4 +239,3 @@ int __init smba_camera_register_devices(void)
 
   return 0;
 }
-#endif
