@@ -1,3 +1,3 @@
 make tegra_smba1006_defconfig
-make -j4
+make -j12
 
